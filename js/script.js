@@ -7,6 +7,7 @@ var Colors = {
 
 window.addEventListener('load', init, false);
 
+
 var scene,
 		camera, fieldOfView, aspectRatio, nearPlane, farPlane, HEIGHT, WIDTH,
 		renderer, container, controls;
@@ -73,8 +74,8 @@ function createLights() {
 
 	// define the resolution of the shadow; the higher the better, 
 	// but also the more expensive and less performant
-	shadowLight.shadow.mapSize.width = 2048;
-	shadowLight.shadow.mapSize.height = 2048;
+	shadowLight.shadow.mapSize.width = 4096;
+	shadowLight.shadow.mapSize.height = 4096;
 	
 	// to activate the lights, just add them to the scene
 	scene.add(hemisphereLight);  
@@ -430,6 +431,7 @@ function init() {
 	createRobot();
 	initSkybox();
 	loop();
+
 }
 
 function loop(){
