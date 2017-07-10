@@ -40,7 +40,7 @@ function createScene() {
 	container.appendChild(renderer.domElement);
 	window.addEventListener('resize', handleWindowResize, false);
 
-	 controls = new THREE.OrbitControls(camera, renderer.domElement);
+	controls = new THREE.OrbitControls(camera, renderer.domElement);
 
 }
 
@@ -82,7 +82,7 @@ function createLights() {
 }
 
 
-var Model = function() {
+var Robot = function() {
 	
 	this.mesh = new THREE.Object3D();
 	
@@ -374,44 +374,77 @@ var Model = function() {
 	head.position.y = 100;
 	torso.position.y = 0;
 
-
-
-
 };
 
-var model;
+// var model;
+// var skyBox;
+
+function initSkybox(){
+
+	var urls = [
+		'skybox/sky_pos_x.jpg',
+		'skybox/sky_neg_x.jpg',
+		'skybox/sky_pos_y.jpg',
+		'skybox/sky_neg_y.jpg',
+		'skybox/sky_neg_z.jpg',
+		'skybox/sky_pos_z.jpg'
+	];
+	
+	var reflectionCube = new THREE.CubeTextureLoader().load( urls );
+	reflectionCube.format = THREE.RGBFormat;
+	
+	var shader = THREE.ShaderLib[ "cube" ];
+	shader.uniforms[ "tCube" ].value = reflectionCube;
+	
+	var material = new THREE.ShaderMaterial( {
+	
+		fragmentShader: shader.fragmentShader,
+		vertexShader: shader.vertexShader,
+		uniforms: shader.uniforms,
+		depthWrite: false,
+		side: THREE.BackSide
+		
+	} ), skyBox = new THREE.Mesh( new THREE.BoxGeometry( 5000, 5000, 5000 ), material );
+	
+	//skyBox.rotation.y += Math.PI;
+	scene.add( skyBox );
 
 
-function createModel(){ 
-	model = new Model();
+}
 
-	model.mesh.position.y = 0;
-	model.mesh.rotation.y = -Math.PI/2;
-	model.mesh.rotation.z = -Math.PI/10;	
-	model.mesh.scale.set(.8,.8,.8);
-	scene.add(model.mesh);
+
+
+function createRobot(){ 
+	robot = new Robot();
+	robot.mesh.position.y = 0;
+	robot.mesh.rotation.y = -Math.PI/2;
+	robot.mesh.rotation.z = -Math.PI/10;	
+	robot.mesh.scale.set(.7,.7,.7);
+	scene.add(robot.mesh);
 }
 
 
 function init() {
 	createScene();
 	createLights();
-	createModel();
+	createRobot();
+	initSkybox();
 	loop();
 }
 
 function loop(){
 
+	controls.update();
+	controls.autoRotate = true;
 
-	model.mesh.rotation.y +=0.02;
+	robot.mesh.rotation.y +=0.005;
+
+	if ( robot.mesh) {
+        robot.mesh.rotation.z = Math.sin(Date.now() * 0.0005) * Math.PI * 0.2 ;
+    }
 
 
 	renderer.render(scene, camera);
-
-
-	// if (this.dial) {
- //        this.dial.rotation.y = Math.sin(Date.now() * 0.005) * Math.PI * 0.05 ;
- //    }
 
 	requestAnimationFrame(loop);
 }
